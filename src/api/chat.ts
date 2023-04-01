@@ -3,6 +3,7 @@ import { fetchEventSource } from '@microsoft/fetch-event-source'
 import type {
   ChatCompletions,
   ChatMessage,
+  ChatModel,
   ChatStreamingCompletions,
   JsonResponse,
 } from '~/types'
@@ -27,7 +28,7 @@ export async function chatCompletionsApi(
 
 export async function chatCompletionsStreamingApi(
   key: string,
-  model: 'gpt-4' | 'gpt-3.5-turbo',
+  model: ChatModel,
   messages: ChatMessage[],
   onopen: () => void,
   onmessage: (completions: ChatStreamingCompletions | null) => void,

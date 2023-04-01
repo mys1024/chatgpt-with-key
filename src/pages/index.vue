@@ -3,15 +3,20 @@ import { ref } from 'vue'
 
 import { useChatStore } from '~/stores/chat'
 import { chatCompletionsStreamingApi } from '~/api/chat'
-import type { ChatMessage, ChatRole } from '~/types'
+import type { ChatMessage, ChatModel, ChatRole } from '~/types'
 
 const chatStore = useChatStore()
 
+const model = ref<ChatModel>('gpt-3.5-turbo')
 const userInput = ref('')
 const historyMessages = ref<ChatMessage[]>([])
 const streaming = ref(false)
 const streamingRole = ref<ChatRole>('assistant')
 const streamingContent = ref('')
+
+function toggleModel() {
+  model.value = model.value === 'gpt-4' ? 'gpt-3.5-turbo' : 'gpt-4'
+}
 
 async function send() {
   // create user message
@@ -21,12 +26,11 @@ async function send() {
   }
   historyMessages.value.push(userMessage)
   userInput.value = ''
-
   // receive assistant message
   await new Promise<void>((resolve) => {
     chatCompletionsStreamingApi(
       chatStore.key,
-      'gpt-3.5-turbo',
+      model.value,
       historyMessages.value,
       () => streaming.value = true,
       (completions) => {
@@ -42,13 +46,11 @@ async function send() {
       },
     )
   })
-
   // store assistant message
   historyMessages.value.push({
     role: streamingRole.value,
     content: streamingContent.value,
   })
-
   // reset states
   streaming.value = false
   streamingRole.value = 'assistant'
@@ -64,6 +66,9 @@ async function send() {
       type="text"
       placeholder="Enter your OpenAI key"
     >
+    <div cursor-pointer @click="toggleModel">
+      Model: {{ model }}
+    </div>
     <div space-y-4>
       <div
         v-for="message, i in historyMessages" :key="i"

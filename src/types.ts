@@ -2,6 +2,8 @@ export interface JsonResponse<T = {} | []> extends Omit<Response, 'arrayBuffer' 
   json(): Promise<T>
 }
 
+export type ChatModel = 'gpt-4' | 'gpt-3.5-turbo'
+
 export type ChatRole = 'system' | 'user' | 'assistant'
 
 export type ChatFinishReason = 'stop' | 'length' | 'content_filter' | 'null'
