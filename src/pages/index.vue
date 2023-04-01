@@ -2,33 +2,57 @@
 import { ref } from 'vue'
 
 import { useChatStore } from '~/stores/chat'
-import { chatCompletionsApi } from '~/api/chat'
-import type { ChatMessage } from '~/types'
+import { chatCompletionsStreamingApi } from '~/api/chat'
+import type { ChatMessage, ChatRole } from '~/types'
 
 const chatStore = useChatStore()
 
 const userInput = ref('')
 const historyMessages = ref<ChatMessage[]>([])
+const streaming = ref(false)
+const streamingRole = ref<ChatRole>('assistant')
+const streamingContent = ref('')
 
 async function send() {
+  // create user message
   const userMessage: ChatMessage = {
     role: 'user',
     content: userInput.value,
   }
   historyMessages.value.push(userMessage)
-
-  const res = await chatCompletionsApi(
-    chatStore.key,
-    'gpt-3.5-turbo',
-    [...historyMessages.value, userMessage],
-  )
-  if (!res.ok)
-    console.error('response is not ok:', res)
-
-  const completions = await res.json()
-  const choice = completions.choices[0]
-  historyMessages.value.push(choice.message)
   userInput.value = ''
+
+  // receive assistant message
+  await new Promise<void>((resolve) => {
+    chatCompletionsStreamingApi(
+      chatStore.key,
+      'gpt-3.5-turbo',
+      historyMessages.value,
+      () => streaming.value = true,
+      (completions) => {
+        if (completions === null) {
+          resolve()
+          return
+        }
+        const delta = completions.choices[0].delta
+        if ((delta as any)?.role)
+          streamingRole.value = (delta as { role: ChatRole }).role
+        else if ((delta as any)?.content)
+          streamingContent.value += (delta as { content: string }).content
+      },
+    )
+  })
+
+  // store assistant message
+  historyMessages.value.push({
+    role: streamingRole.value,
+    content: streamingContent.value,
+  })
+
+  // reset states
+  streaming.value = false
+  streamingRole.value = 'assistant'
+  streamingContent.value = ''
 }
 </script>
 
@@ -45,6 +69,9 @@ async function send() {
         v-for="message, i in historyMessages" :key="i"
       >
         {{ message.content }}
+      </div>
+      <div v-show="streaming">
+        {{ streamingContent }}
       </div>
     </div>
     <div flex space-x-4>

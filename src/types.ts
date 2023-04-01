@@ -2,23 +2,40 @@ export interface JsonResponse<T = {} | []> extends Omit<Response, 'arrayBuffer' 
   json(): Promise<T>
 }
 
+export type ChatRole = 'system' | 'user' | 'assistant'
+
+export type ChatFinishReason = 'stop' | 'length' | 'content_filter' | 'null'
+
 export interface ChatMessage {
-  role: 'system' | 'user' | 'assistant'
+  role: ChatRole
   content: string
 }
 
 export interface ChatCompletions {
   id: string
   object: string
+  model: string
   created: number
   choices: {
     index: number
+    finish_reason: ChatFinishReason
     message: ChatMessage
-    finish_reason: 'stop' | 'length' | 'content_filter' | 'null'
   }[]
   usage: {
     prompt_tokens: number
     completion_tokens: number
     total_tokens: number
   }
+}
+
+export interface ChatStreamingCompletions {
+  id: string
+  object: string
+  model: string
+  created: number
+  choices: {
+    index: number
+    finish_reason: ChatFinishReason
+    delta: { role: ChatRole } | { content: string }
+  }[]
 }
