@@ -1,10 +1,12 @@
-# Vitesse Light
+# chatgpt-with-key
 
-Opinionated Lightweight Vitesse.
+Use ChatGPT with your OpenAI key.
 
-## Credits
+## References
 
-Opinionated lightweight version of [Vitesse](https://github.com/antfu/vitesse)
+[Documentation](https://platform.openai.com/docs/guides/chat)
+
+[API reference](https://platform.openai.com/docs/api-reference/chat)
 
 ## License
 

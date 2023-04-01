@@ -25,8 +25,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'safari-pinned-tab.svg'],
       manifest: {
-        name: 'Vitesse Light',
-        short_name: 'Vitesse Light',
+        name: 'ChatGPT with key',
+        short_name: 'ChatGPT',
         theme_color: '#ffffff',
         icons: [
           {

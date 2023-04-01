@@ -6,6 +6,7 @@
   "editor.formatOnSave": false,
   "cSpell.words": [
     "antfu",
+    "chatgpt",
     "demi",
     "iconify",
     "intlify",
@@ -16,7 +17,6 @@
     "unplugin",
     "Vite",
     "vitejs",
-    "Vitesse",
     "vitest",
     "vueuse"
   ]
