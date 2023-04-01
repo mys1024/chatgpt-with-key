@@ -69,26 +69,35 @@ async function send() {
     <div cursor-pointer @click="toggleModel">
       Model: {{ model }}
     </div>
-    <div space-y-4>
+    <div
+      w="full md:3/5 xl:2/5" space-y-4
+      :style="{ whiteSpace: 'pre-wrap' }"
+    >
       <div
         v-for="message, i in historyMessages" :key="i"
+        px-4 py-2 bg-gray-1 rounded
       >
         {{ message.content }}
       </div>
-      <div v-show="streaming">
+      <div
+        v-show="streaming"
+        px-4 py-2 bg-gray-1 rounded
+      >
         {{ streamingContent }}
       </div>
     </div>
     <div flex space-x-4>
-      <input
+      <textarea
         v-model="userInput"
-        w-100 px-4 py-1
+        w-100 h-16 px-4 py-1
         type="text"
         placeholder="Send a message..."
-      >
-      <button px-4 py-1 bg-gray @click="send">
-        Send
-      </button>
+      />
+      <div flex items-center>
+        <button px-4 py-1 bg-gray @click="send">
+          Send
+        </button>
+      </div>
     </div>
   </div>
 </template>
