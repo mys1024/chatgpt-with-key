@@ -1,0 +1,25 @@
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  & {
+    --color-bg: #b8def3;
+  }
+
+  &.dark {
+    --color-bg: #121212;
+  }
+}
+
+html {
+  background-color: var(--color-bg);
+
+  &.dark {
+    color-scheme: dark;
+  }
+}
