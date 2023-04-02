@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import ThemeSwitch from '~/components/ThemeSwitch.vue'
+import Footer from '~/components/Footer.vue'
 </script>
 
 <template>
   <div px-4 py-8>
     <RouterView />
-    <footer text-center>
-      <ThemeSwitch mt-8 />
-    </footer>
+    <Footer text-center mt-8 />
   </div>
 </template>

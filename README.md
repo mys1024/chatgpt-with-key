@@ -1,6 +1,6 @@
 # chatgpt-with-key
 
-Use ChatGPT with your OpenAI key.
+Use ChatGPT with your OpenAI API key: [https://chatgpt.1024.cab/](https://chatgpt.1024.cab/)
 
 ## References
 
