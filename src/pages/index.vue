@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 
 import { useChatStore } from '~/stores/chat'
 import { chatCompletionsApi } from '~/api/chat'
@@ -39,7 +39,7 @@ async function send() {
       model.value,
       historyMessages.value,
       () => streaming.value = true,
-      (completions) => {
+      async (completions) => {
         if (completions === null) {
           resolve()
           return
@@ -49,6 +49,8 @@ async function send() {
           streamingRole.value = (delta as { role: ChatRole }).role
         else if ((delta as any)?.content)
           streamingContent.value += (delta as { content: string }).content
+        await nextTick()
+        document.querySelector('html')?.scrollTo({ top: 1e9 })
       },
     )
   })
@@ -65,50 +67,65 @@ async function send() {
 </script>
 
 <template>
-  <div space-y-8 flex flex-col items-center>
+  <div
+    w="full md:3/5 xl:2/5" mx-auto space-y-4
+    flex flex-col items-center
+  >
+    <!-- OpenAI API key -->
     <input
       v-model="chatStore.key"
-      w-100 px-4 py-1
+      w-full rounded px-4 py-1
       type="text"
-      placeholder="Enter your OpenAI key"
+      placeholder="Enter our OpenAI API key"
     >
-    <div space-x-8>
-      <span cursor-pointer @click="toggleModel">
-        Model: {{ model }}
-      </span>
-      <span cursor-pointer @click="toggleApiProxy">
-        API Proxy: {{ apiProxy }}
-      </span>
-    </div>
-    <div
-      w="full md:3/5 xl:2/5" space-y-4
-      :style="{ whiteSpace: 'pre-wrap' }"
-    >
+    <template v-if="chatStore.key">
+      <!-- settings -->
+      <div space-x-4>
+        <span cursor-pointer @click="toggleModel">
+          Model: {{ model }}
+        </span>
+        <span cursor-pointer @click="toggleApiProxy">
+          Proxy: {{ apiProxy }}
+        </span>
+      </div>
+      <!-- chat -->
       <div
-        v-for="message, i in historyMessages" :key="i"
-        px-4 py-2 bg-gray-1 rounded
+        w-full space-y-2
+        :style="{ whiteSpace: 'pre-wrap' }"
       >
-        {{ message.content }}
+        <div
+          v-for="message, i in historyMessages" :key="i"
+          px-4 py-2 rounded bg="gray-1 dark:gray-7"
+        >
+          {{ message.content }}
+        </div>
+        <div
+          v-show="streaming"
+          px-4 py-2 rounded bg="gray-1 dark:gray-7"
+        >
+          {{ streamingContent }}
+        </div>
       </div>
-      <div
-        v-show="streaming"
-        px-4 py-2 bg-gray-1 rounded
-      >
-        {{ streamingContent }}
+      <!-- user input -->
+      <div w-full flex space-x-4>
+        <div flex-grow>
+          <textarea
+            v-model="userInput"
+            w-full h-16 px-4 py-1 rounded
+            type="text"
+            placeholder="Enter something..."
+          />
+        </div>
+        <div flex items-center>
+          <button
+            px-4 py-1 rounded
+            bg="gray hover:gray-5" transition
+            @click="send"
+          >
+            Send
+          </button>
+        </div>
       </div>
-    </div>
-    <div flex space-x-4>
-      <textarea
-        v-model="userInput"
-        w-100 h-16 px-4 py-1
-        type="text"
-        placeholder="Send a message..."
-      />
-      <div flex items-center>
-        <button px-4 py-1 bg-gray @click="send">
-          Send
-        </button>
-      </div>
-    </div>
+    </template>
   </div>
 </template>

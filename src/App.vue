@@ -3,10 +3,10 @@ import ThemeSwitch from '~/components/ThemeSwitch.vue'
 </script>
 
 <template>
-  <div p-16>
+  <div px-4 py-8>
     <RouterView />
     <footer text-center>
-      <ThemeSwitch mt-16 />
+      <ThemeSwitch mt-8 />
     </footer>
   </div>
 </template>
