@@ -13,7 +13,6 @@
     "preview-https": "serve dist"
   },
   "dependencies": {
-    "@microsoft/fetch-event-source": "^2.0.1",
     "@unocss/reset": "^0.50.6",
     "@vueuse/core": "^9.13.0",
     "pinia": "^2.0.33",

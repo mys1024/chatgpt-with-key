@@ -2,12 +2,13 @@
 import { ref } from 'vue'
 
 import { useChatStore } from '~/stores/chat'
-import { chatCompletionsStreamingApi } from '~/api/chat'
+import { chatCompletionsApi } from '~/api/chat'
 import type { ChatMessage, ChatModel, ChatRole } from '~/types'
 
 const chatStore = useChatStore()
 
 const model = ref<ChatModel>('gpt-3.5-turbo')
+const apiProxy = ref<'on' | 'off'>('on')
 const userInput = ref('')
 const historyMessages = ref<ChatMessage[]>([])
 const streaming = ref(false)
@@ -16,6 +17,10 @@ const streamingContent = ref('')
 
 function toggleModel() {
   model.value = model.value === 'gpt-4' ? 'gpt-3.5-turbo' : 'gpt-4'
+}
+
+function toggleApiProxy() {
+  apiProxy.value = apiProxy.value === 'on' ? 'off' : 'on'
 }
 
 async function send() {
@@ -28,7 +33,8 @@ async function send() {
   userInput.value = ''
   // receive assistant message
   await new Promise<void>((resolve) => {
-    chatCompletionsStreamingApi(
+    chatCompletionsApi(
+      apiProxy.value === 'on',
       chatStore.key,
       model.value,
       historyMessages.value,
@@ -66,8 +72,13 @@ async function send() {
       type="text"
       placeholder="Enter your OpenAI key"
     >
-    <div cursor-pointer @click="toggleModel">
-      Model: {{ model }}
+    <div space-x-8>
+      <span cursor-pointer @click="toggleModel">
+        Model: {{ model }}
+      </span>
+      <span cursor-pointer @click="toggleApiProxy">
+        API Proxy: {{ apiProxy }}
+      </span>
     </div>
     <div
       w="full md:3/5 xl:2/5" space-y-4
